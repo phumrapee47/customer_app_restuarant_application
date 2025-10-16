@@ -89,6 +89,7 @@ const supabase = new SupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // ================================
 const CustomerApp = () => {
   const [menuItems, setMenuItems] = useState([]);
+  const [isShopOpen, setIsShopOpen] = useState(null);
   const [cart, setCart] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('ทั้งหมด');
   const [selectedItem, setSelectedItem] = useState(null);
@@ -98,21 +99,36 @@ const CustomerApp = () => {
   const [orderNote, setOrderNote] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [slip, setSlip] = useState(null);
-  const [showQR, setShowQR] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState('menu'); // 'menu' or 'payment'
+  const [currentPage, setCurrentPage] = useState('menu');
   const [lineUserId, setLineUserId] = useState('');
 
   useEffect(() => {
-    // รับ LINE User ID จาก URL parameter
     const urlParams = new URLSearchParams(window.location.search);
     const userId = urlParams.get('lineUserId');
     if (userId) {
       setLineUserId(userId);
       console.log('LINE User ID detected:', userId);
     }
+    loadShopStatus();
     loadMenuItems();
   }, []);
+
+  const loadShopStatus = async () => {
+    try {
+      const { data, error } = await supabase.from('shop_settings').select('*');
+      if (error) throw error;
+      
+      if (data && data.length > 0) {
+        setIsShopOpen(data[0].is_open);
+      } else {
+        setIsShopOpen(true);
+      }
+    } catch (error) {
+      console.error('Error loading shop status:', error);
+      setIsShopOpen(true);
+    }
+  };
 
   const loadMenuItems = async () => {
     try {
@@ -260,6 +276,36 @@ const CustomerApp = () => {
     }
   };
 
+  // Loading state
+  if (isShopOpen === null) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-xl text-gray-600">กำลังโหลด...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Shop Closed Screen
+  if (!isShopOpen) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
+          <div className="text-6xl mb-4">🔴</div>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">ร้านปิด</h1>
+          <p className="text-gray-600 mb-6">
+            ขออภัยค่ะ ร้านอาหารปัจจุบันปิดอยู่
+          </p>
+          <p className="text-gray-500">
+            กรุณากลับมาใหม่ในช่วงเวลาที่ร้านเปิดค่ะ
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Shop Open - Display Menu
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
       <div className="container mx-auto px-4 py-6 max-w-6xl">
