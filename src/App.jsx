@@ -565,7 +565,9 @@ const CustomerApp = () => {
             <div className="bg-gray-50 p-6 rounded-lg text-center mb-6">
               <h3 className="font-bold text-lg mb-3 text-gray-800">สแกน QR Code เพื่อชำระเงิน</h3>
               <div className="bg-white p-4 rounded-lg inline-block">
-                <div className="text-8xl">📱</div>
+                <div className="text-8xl">
+                  <img src="/Qr_code.JPG" alt="QR Code" className="mx-auto" />
+                </div>
                 <p className="text-sm text-gray-500 mt-2">QR Code PromptPay</p>
                 <p className="font-bold text-orange-600 text-xl mt-1">{getTotalPrice()}฿</p>
               </div>
@@ -586,6 +588,7 @@ const CustomerApp = () => {
                 </div>
               )}
             </div>
+
             <button
               onClick={submitOrder}
               disabled={loading || !slip}
