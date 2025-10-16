@@ -4,8 +4,8 @@ import { ShoppingCart, Trash2 } from 'lucide-react';
 // ================================
 // Supabase Configuration
 // ================================
-const SUPABASE_URL = 'https://eirnjevvpissmucejvce.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpcm5qZXZ2cGlzc211Y2VqdmNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1Nzg0ODcsImV4cCI6MjA3NTE1NDQ4N30.ABUHSuql5VBbI-yjBiHR9t3PUJddiVbCmqd5iSRtVGk';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 class SupabaseClient {
   constructor(url, key) {
