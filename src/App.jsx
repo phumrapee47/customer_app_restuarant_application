@@ -1,4 +1,4 @@
-// import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Trash2 } from 'lucide-react';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -354,7 +354,10 @@ const CustomerApp = () => {
                   <img 
                     src={item.image} 
                     alt={item.name}
-                    className="w-full h-32 object-cover"
+                    className="w-full h-32 object-cover bg-gray-200"
+                    onError={(e) => {
+                      e.target.src = '🍽️';
+                    }}
                   />
                   <div className="p-3">
                     <h3 className="font-medium text-sm text-gray-800 line-clamp-2 min-h-[40px]">
@@ -390,7 +393,10 @@ const CustomerApp = () => {
                     <img 
                       src={selectedItem.image} 
                       alt={selectedItem.name}
-                      className="w-full h-48 object-cover rounded-lg mb-4"
+                      className="w-full h-48 object-cover rounded-lg mb-4 bg-gray-200"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                      }}
                     />
                     <h3 className="text-2xl font-bold text-gray-800 mb-2">{selectedItem.name}</h3>
                     <p className="text-gray-500 text-center mb-6">{selectedItem.category}</p>
