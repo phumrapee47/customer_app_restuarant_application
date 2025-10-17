@@ -1,9 +1,6 @@
-import React, { useState, useEffect } from 'react';
+// import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Trash2 } from 'lucide-react';
 
-// ================================
-// Supabase Configuration
-// ================================
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
@@ -84,9 +81,6 @@ class SupabaseClient {
 
 const supabase = new SupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ================================
-// Customer App Component
-// ================================
 const CustomerApp = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [isShopOpen, setIsShopOpen] = useState(null);
@@ -276,7 +270,6 @@ const CustomerApp = () => {
     }
   };
 
-  // Loading state
   if (isShopOpen === null) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center">
@@ -287,33 +280,25 @@ const CustomerApp = () => {
     );
   }
 
-  // Shop Closed Screen
   if (!isShopOpen) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
           <div className="text-6xl mb-4">🔴</div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">ร้านปิด</h1>
-          <p className="text-gray-600 mb-6">
-            ขออภัยค่ะ ร้านอาหารปัจจุบันปิดอยู่
-          </p>
-          <p className="text-gray-500">
-            กรุณากลับมาใหม่ในช่วงเวลาที่ร้านเปิดค่ะ
-          </p>
+          <p className="text-gray-600 mb-6">ขออภัยค่ะ ร้านอาหารปัจจุบันปิดอยู่</p>
+          <p className="text-gray-500">กรุณากลับมาใหม่ในช่วงเวลาที่ร้านเปิดค่ะ</p>
         </div>
       </div>
     );
   }
 
-  // Shop Open - Display Menu
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
       <div className="container mx-auto px-4 py-6 max-w-6xl">
         
-        {/* Menu Page */}
         {currentPage === 'menu' && (
           <>
-            {/* Header */}
             <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 relative">
               <h1 className="text-3xl font-bold text-gray-800 mb-2 flex items-center gap-2">
                 <span className="text-4xl">🍽️</span>
@@ -341,7 +326,6 @@ const CustomerApp = () => {
               )}
             </div>
 
-            {/* Category Filter */}
             <div className="bg-white rounded-xl shadow-md p-4 mb-6 overflow-x-auto">
               <div className="flex gap-2 min-w-max">
                 {categories.map(cat => (
@@ -360,26 +344,30 @@ const CustomerApp = () => {
               </div>
             </div>
 
-            {/* Menu Grid */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
               {filteredMenu.map(item => (
                 <div 
                   key={item.id} 
                   onClick={() => setSelectedItem(item)}
-                  className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer p-4 hover:scale-105"
+                  className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer overflow-hidden hover:scale-105"
                 >
-                  <div className="text-4xl mb-2 text-center">{item.image}</div>
-                  <h3 className="font-medium text-sm text-gray-800 text-center line-clamp-2 min-h-[40px]">
-                    {item.name}
-                  </h3>
-                  <p className="text-xs text-gray-500 text-center mt-1">
-                    {item.price_normal}-{item.price_special}฿
-                  </p>
+                  <img 
+                    src={item.image} 
+                    alt={item.name}
+                    className="w-full h-32 object-cover"
+                  />
+                  <div className="p-3">
+                    <h3 className="font-medium text-sm text-gray-800 line-clamp-2 min-h-[40px]">
+                      {item.name}
+                    </h3>
+                    <p className="text-xs text-gray-500 text-center mt-1">
+                      {item.price_normal}-{item.price_special}฿
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
 
-            {/* Item Detail Modal */}
             {selectedItem && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                 <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
@@ -399,8 +387,12 @@ const CustomerApp = () => {
                   </div>
                   
                   <div className="p-6">
-                    <div className="text-6xl mb-4 text-center">{selectedItem.image}</div>
-                    <h3 className="text-2xl font-bold text-gray-800 mb-2 text-center">{selectedItem.name}</h3>
+                    <img 
+                      src={selectedItem.image} 
+                      alt={selectedItem.name}
+                      className="w-full h-48 object-cover rounded-lg mb-4"
+                    />
+                    <h3 className="text-2xl font-bold text-gray-800 mb-2">{selectedItem.name}</h3>
                     <p className="text-gray-500 text-center mb-6">{selectedItem.category}</p>
                     
                     <div className="mb-6">
@@ -483,7 +475,6 @@ const CustomerApp = () => {
               </div>
             )}
 
-            {/* Cart */}
             {cart.length > 0 && (
               <div id="cart-section" className="bg-white rounded-xl shadow-xl p-6 mb-6">
                 <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-gray-800">
@@ -568,7 +559,6 @@ const CustomerApp = () => {
           </>
         )}
 
-        {/* Payment Page */}
         {currentPage === 'payment' && (
           <div className="bg-white rounded-xl shadow-xl p-6">
             <div className="flex items-center gap-3 mb-6">
@@ -611,9 +601,7 @@ const CustomerApp = () => {
             <div className="bg-gray-50 p-6 rounded-lg text-center mb-6">
               <h3 className="font-bold text-lg mb-3 text-gray-800">สแกน QR Code เพื่อชำระเงิน</h3>
               <div className="bg-white p-4 rounded-lg inline-block">
-                <div className="text-8xl">
-                  <img src="/Qr_code.JPG" alt="QR Code" className="mx-auto" />
-                </div>
+                <img src="/Qr_code.JPG" alt="QR Code" className="w-48 h-48 mx-auto" />
                 <p className="text-sm text-gray-500 mt-2">QR Code PromptPay</p>
                 <p className="font-bold text-orange-600 text-xl mt-1">{getTotalPrice()}฿</p>
               </div>
