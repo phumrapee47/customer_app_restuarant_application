@@ -96,6 +96,7 @@ const CustomerApp = () => {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState('menu');
   const [lineUserId, setLineUserId] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('online');
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -233,7 +234,7 @@ const CustomerApp = () => {
       alert('กรุณาเลือกเมนูอาหาร');
       return;
     }
-    if (!slip) {
+    if (paymentMethod === 'online' && !slip) {
       alert('กรุณาแนบสลิปการชำระเงิน');
       return;
     }
@@ -243,10 +244,11 @@ const CustomerApp = () => {
       const { data, error } = await supabase.from('orders').insert([{
         items: cart,
         note: orderNote,
-        slip_url: slip,
+        slip_url: paymentMethod === 'online' ? slip : null,
         total: getTotalPrice(),
         customer_phone: customerPhone,
         line_user_id: lineUserId || null,
+        payment_method: paymentMethod,
         status: 'pending'
       }]);
 
@@ -261,6 +263,7 @@ const CustomerApp = () => {
       setCustomerPhone('');
       setOrderNote('');
       setSlip(null);
+      setPaymentMethod('online');
       setCurrentPage('menu');
     } catch (error) {
       console.error('Error submitting order:', error);
@@ -577,6 +580,36 @@ const CustomerApp = () => {
               <h2 className="text-2xl font-bold text-gray-800">ชำระเงิน</h2>
             </div>
 
+            <div className="mb-6">
+              <h3 className="font-bold text-lg mb-3 text-gray-800">เลือกวิธีชำระเงิน</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  onClick={() => setPaymentMethod('online')}
+                  className={`p-4 rounded-xl border-2 transition-all ${
+                    paymentMethod === 'online'
+                      ? 'border-orange-500 bg-orange-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="text-3xl mb-2">💳</div>
+                  <div className="font-bold text-gray-800">จ่ายเลย</div>
+                  <div className="text-xs text-gray-500 mt-1">โอนเงินผ่าน QR Code</div>
+                </button>
+                <button
+                  onClick={() => setPaymentMethod('cash')}
+                  className={`p-4 rounded-xl border-2 transition-all ${
+                    paymentMethod === 'cash'
+                      ? 'border-green-500 bg-green-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="text-3xl mb-2">💵</div>
+                  <div className="font-bold text-gray-800">ชำระหน้าร้าน</div>
+                  <div className="text-xs text-gray-500 mt-1">จ่ายเงินสดตอนรับของ</div>
+                </button>
+              </div>
+            </div>
+
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
               <h3 className="font-bold text-lg mb-3 text-gray-800">สรุปรายการสั่งซื้อ</h3>
               <div className="space-y-2 mb-3">
@@ -604,34 +637,49 @@ const CustomerApp = () => {
               </div>
             )}
 
-            <div className="bg-gray-50 p-6 rounded-lg text-center mb-6">
-              <h3 className="font-bold text-lg mb-3 text-gray-800">สแกน QR Code เพื่อชำระเงิน</h3>
-              <div className="bg-white p-4 rounded-lg inline-block">
-                <img src="/Qr_code.JPG" alt="QR Code" className="w-48 h-48 mx-auto" />
-                <p className="text-sm text-gray-500 mt-2">QR Code PromptPay</p>
-                <p className="font-bold text-orange-600 text-xl mt-1">{getTotalPrice()}฿</p>
-              </div>
-            </div>
-
-            <div className="mb-6">
-              <label className="block font-medium mb-2 text-gray-700">แนบสลิปการชำระเงิน *</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleSlipUpload}
-                className="w-full border border-gray-300 rounded-lg p-2 mb-2"
-                disabled={loading}
-              />
-              {slip && (
-                <div className="mt-2 bg-gray-50 p-2 rounded-lg">
-                  <img src={slip} alt="สลิป" className="max-w-xs mx-auto rounded-lg shadow-md" />
+            {paymentMethod === 'online' && (
+              <>
+                <div className="bg-gray-50 p-6 rounded-lg text-center mb-6">
+                  <h3 className="font-bold text-lg mb-3 text-gray-800">สแกน QR Code เพื่อชำระเงิน</h3>
+                  <div className="bg-white p-4 rounded-lg inline-block">
+                    <img src="/Qr_code.JPG" alt="QR Code" className="w-48 h-48 mx-auto" />
+                    <p className="text-sm text-gray-500 mt-2">QR Code PromptPay</p>
+                    <p className="font-bold text-orange-600 text-xl mt-1">{getTotalPrice()}฿</p>
+                  </div>
                 </div>
-              )}
-            </div>
+
+                <div className="mb-6">
+                  <label className="block font-medium mb-2 text-gray-700">แนบสลิปการชำระเงิน *</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleSlipUpload}
+                    className="w-full border border-gray-300 rounded-lg p-2 mb-2"
+                    disabled={loading}
+                  />
+                  {slip && (
+                    <div className="mt-2 bg-gray-50 p-2 rounded-lg">
+                      <img src={slip} alt="สลิป" className="max-w-xs mx-auto rounded-lg shadow-md" />
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+
+            {paymentMethod === 'cash' && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                <h3 className="font-bold text-yellow-800 mb-2">📌 ข้อมูลสำคัญ</h3>
+                <ul className="text-sm text-yellow-700 space-y-1">
+                  <li>• กรุณาเตรียมเงินพอดี {getTotalPrice()}฿</li>
+                  <li>• ชำระเงินสดตอนมารับอาหารที่ร้าน</li>
+                  <li>• รอการยืนยันออเดอร์จากร้านก่อนนะคะ</li>
+                </ul>
+              </div>
+            )}
 
             <button
               onClick={submitOrder}
-              disabled={loading || !slip}
+              disabled={loading || (paymentMethod === 'online' && !slip)}
               className="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-bold text-lg transition-all shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               {loading ? 'กำลังส่งออเดอร์...' : 'ยืนยันการสั่งอาหาร'}
