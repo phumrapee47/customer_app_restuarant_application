@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>Redirecting...</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+  <script>
+    async function main() {
+      try {
+        // ✅ ใส่ LIFF ID ของคุณตรงนี้
+        await liff.init({ liffId: "2008358067-M7gOrVPR" });
+
+        // ✅ ถ้ายังไม่ได้ login ให้ login ก่อน
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
+
+        // ✅ ดึงข้อมูลผู้ใช้จาก LINE
+        const profile = await liff.getProfile();
+        const userId = profile.userId;
+
+        // ✅ redirect ไปหน้าเว็บพร้อมส่ง userId ไปด้วย
+        window.location.href = `https://customer-app-restuarant-application.onrender.com?lineUserId=${userId}`;
+      } catch (err) {
+        console.error("LIFF error:", err);
+        document.body.innerHTML = "<h3>เกิดข้อผิดพลาดในการเปิดหน้าเว็บ</h3>";
+      }
+    }
+
+    main();
+  </script>
+</body>
+</html>
